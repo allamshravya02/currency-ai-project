@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Education Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- SHARED HEADER -->
+    <script src="shared-header.js"></script>
+
+    <div class="container">
+        <!-- Search Section -->
+        <div class="search-card">
+            <h2>🌍 Search Currency Information</h2>
+            <p class="subtitle">Search by ISO code (USD, INR), currency name, or country</p>
+            
+            <form id="search-form">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Enter ISO code (USD), currency name (Dollar), or country (United States)..."
+                        required
+                    >
+                    <button type="submit" class="search-btn">
+                        🔍 Search
+                    </button>
+                </div>
+            </form>
+
+            <!-- Quick Search Suggestions -->
+            <div class="quick-search">
+                <p>Quick search:</p>
+                <button class="quick-btn" onclick="quickSearch('USD')">USD</button>
+                <button class="quick-btn" onclick="quickSearch('INR')">INR</button>
+                <button class="quick-btn" onclick="quickSearch('EUR')">EUR</button>
+                <button class="quick-btn" onclick="quickSearch('GBP')">GBP</button>
+                <button class="quick-btn" onclick="quickSearch('JPY')">JPY</button>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Searching...</p>
+            </div>
+
+            <!-- Error -->
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="results-container hidden">
+            
+            <!-- Currency Images Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>🖼️ Currency Images</h3>
+                </div>
+                <div class="card-content">
+                    <div class="images-grid">
+                        <div class="image-item">
+                            <h4>Banknote</h4>
+                            <img id="note-image" src="" alt="Currency Note" onerror="this.src='/static/images/placeholder-note.png'; this.alt='Image not available'">
+                        </div>
+                        <div class="image-item">
+                            <h4>Coin</h4>
+                            <img id="coin-image" src="" alt="Currency Coin" onerror="this.src='/static/images/placeholder-note.png'; this.alt='Image not available'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Info Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>💰 Basic Information</h3>
+                </div>
+                <div class="card-content">
+                    <div class="info-row">
+                        <span class="info-label">Currency Name:</span>
+                        <span class="info-value" id="currency-name"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">ISO Code:</span>
+                        <span class="info-value" id="iso-code"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Symbol:</span>
+                        <span class="info-value" id="symbol"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Country:</span>
+                        <span class="info-value" id="country"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Continent:</span>
+                        <span class="info-value" id="continent"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Pronunciation:</span>
+                        <span class="info-value" id="pronunciation"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monetary System Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>🏦 Monetary System</h3>
+                </div>
+                <div class="card-content">
+                    <div class="info-row">
+                        <span class="info-label">Currency Type:</span>
+                        <span class="info-value" id="currency-type"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Issuing Authority:</span>
+                        <span class="info-value" id="issuing-authority"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Central Bank:</span>
+                        <span class="info-value" id="central-bank"></span>
+                    </div>
+                    <div class="info-section">
+                        <h4>Usage</h4>
+                        <p id="usage"></p>
+                    </div>
+                    <div class="info-section">
+                        <h4>Global Importance</h4>
+                        <p id="global-importance"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Denominations Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>💵 Denominations</h3>
+                </div>
+                <div class="card-content">
+                    <div class="denomination-section">
+                        <h4>Banknotes</h4>
+                        <div id="banknotes" class="denomination-list"></div>
+                    </div>
+                    <div class="denomination-section">
+                        <h4>Coins</h4>
+                        <div id="coins" class="denomination-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facts Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>💡 Interesting Facts</h3>
+                </div>
+                <div class="card-content">
+                    <ul id="facts-list" class="facts-list"></ul>
+                </div>
+            </div>
+
+            <!-- Recognition Tips Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>🔍 Recognition Tips</h3>
+                </div>
+                <div class="card-content">
+                    <ul id="recognition-tips-list" class="recognition-list"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Currency Education Portal - Learn About Global Currencies</p>
+        <p class="footer-note">Data powered by MongoDB</p>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

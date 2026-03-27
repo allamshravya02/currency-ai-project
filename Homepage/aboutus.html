@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - AI-Powered Currency Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Page Content */
+        .page-content {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        ul li {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        b {
+            color: #333;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #667eea;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .content-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SHARED HEADER -->
+    <script src="../shared-header.js"></script>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <div class="content-card">
+            <h1 class="page-title">About AI-Powered Global Currency Analyzer</h1>
+
+            <h2>Introduction</h2>
+            <p>
+                The AI-Powered Global Currency Analyzer is an intelligent system designed to assist users
+                in recognizing, converting, and learning about global currencies. The system combines
+                Artificial Intelligence, real-time currency exchange services, and an educational portal
+                to provide a complete currency analysis platform.
+            </p>
+            <p>
+                The main objective of this project is to create a unified platform where users can identify
+                currency through images, convert currency values using real-time exchange rates, and
+                access detailed information about currencies used around the world.
+            </p>
+
+            <h2>Currency Recognition Module</h2>
+            <p>
+                The Currency Recognition Module uses a Convolutional Neural Network (CNN) model based on
+                the MobileNet architecture to identify currency denominations from uploaded images.
+            </p>
+            <p>
+                Users can upload an image of a currency note or coin, and the AI model analyzes the image
+                to detect the type of currency and its denomination. This feature helps demonstrate the
+                practical use of AI in image classification and financial applications.
+            </p>
+            <p><b>How to Use:</b></p>
+            <ul>
+                <li>Open the Currency Recognition module from the homepage.</li>
+                <li>Upload an image of a currency note or coin.</li>
+                <li>The AI model predicts the currency and denomination.</li>
+                <li>The detected value can be sent to the conversion module.</li>
+            </ul>
+
+            <h2>Currency Conversion Module</h2>
+            <p>
+                The Currency Conversion Module allows users to convert currency values between different
+                countries using real-time exchange rates obtained from the Exchange Rate API.
+            </p>
+            <p>
+                Users can either manually enter a currency amount or use the value detected by the
+                recognition module. The system retrieves the latest exchange rates and calculates the
+                converted value instantly.
+            </p>
+            <p><b>How to Use:</b></p>
+            <ul>
+                <li>Enter a currency amount.</li>
+                <li>Select the source currency.</li>
+                <li>Select the target currency.</li>
+                <li>The system displays the converted value with the current exchange rate.</li>
+            </ul>
+
+            <h2>Currency Education Portal</h2>
+            <p>
+                The Currency Education Portal provides detailed information about currencies from
+                different countries. This module retrieves structured data from a MongoDB database and
+                displays it in an organized format.
+            </p>
+            <p>
+                Users can search for a currency using the country name, currency name, or ISO code.
+                The portal then displays comprehensive information such as the currency symbol, issuing authority,
+                denominations, interesting facts, and recognition tips along with sample images of notes
+                and coins.
+            </p>
+            <p><b>How to Use:</b></p>
+            <ul>
+                <li>Enter a country name, currency name, or ISO code in the search box.</li>
+                <li>The system searches the MongoDB database for matching results.</li>
+                <li>View detailed currency information including images, facts, and security features.</li>
+            </ul>
+
+            <h2>Technologies Used</h2>
+            <p>
+                This project demonstrates the integration of multiple modern technologies:
+            </p>
+            <ul>
+                <li><b>Backend:</b> Python Flask framework for REST API development</li>
+                <li><b>AI/ML:</b> TensorFlow and MobileNet CNN for image recognition</li>
+                <li><b>Database:</b> MongoDB for storing currency information</li>
+                <li><b>Frontend:</b> HTML5, CSS3, JavaScript for responsive user interfaces</li>
+                <li><b>API Integration:</b> Exchange Rate API for real-time currency conversion</li>
+                <li><b>Libraries:</b> Flask-CORS, PyMongo, Requests</li>
+            </ul>
+
+            <h2>Project Objective</h2>
+            <p>
+                This project aims to demonstrate the integration of Artificial Intelligence, Web
+                Development, APIs, and Database Management into a single intelligent platform that
+                enhances understanding and interaction with global currencies. It serves as a comprehensive
+                solution for currency recognition, conversion, and education.
+            </p>
+        </div>
+    </div>
+
+    <!-- SHARED FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="http://127.0.0.1:5000/home">Home</a>
+                <a href="http://127.0.0.1:5000/home/aboutus.html">About Us</a>
+                <a href="http://127.0.0.1:5000">Currency Converter</a>
+                <a href="http://127.0.0.1:5001">Education Portal</a>
+                <a href="http://127.0.0.1:5000/home/contactus.html">Contact Us</a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 AI-Powered Currency Analyzer. All rights reserved.</p>
+                <p style="margin-top: 10px; opacity: 0.8;">Built with Flask, TensorFlow, MongoDB & ❤️</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

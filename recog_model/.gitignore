@@ -1,0 +1,14 @@
+# Virtual environments
+.venv/
+recog_model/.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Temp files
+temp.jpg
+
+# OS files
+.DS_Store
+Thumbs.db
