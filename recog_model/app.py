@@ -4,145 +4,134 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing import image
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model
+# =========================
+# LOAD MODEL
+# =========================
 model = tf.keras.models.load_model("models/best_currency_model.keras")
-class_names = sorted(os.listdir("dataset/train"))
 
-print("=" * 50)
-print("Model loaded successfully!")
-print(f"Classes detected: {class_names}")
-print("=" * 50)
+# =========================
+# LOAD CLASS INDICES
+# =========================
+with open("class_indices.json") as f:
+    class_indices = json.load(f)
 
-# Currency mapping - MATCH YOUR EXACT DATASET FOLDERS
+class_names = {v: k for k, v in class_indices.items()}
+
+# =========================
+# CURRENCY MAPPING
+# =========================
 CURRENCY_MAPPING = {
-    # Indian Rupee
     'INR_10': {'currency': 'INR', 'denomination': 10, 'country': 'India'},
     'INR_20': {'currency': 'INR', 'denomination': 20, 'country': 'India'},
     'INR_50': {'currency': 'INR', 'denomination': 50, 'country': 'India'},
     'INR_100': {'currency': 'INR', 'denomination': 100, 'country': 'India'},
     'INR_200': {'currency': 'INR', 'denomination': 200, 'country': 'India'},
     'INR_500': {'currency': 'INR', 'denomination': 500, 'country': 'India'},
+
     'USD_1': {'currency': 'USD', 'denomination': 1, 'country': 'United States'},
     'USD_2': {'currency': 'USD', 'denomination': 2, 'country': 'United States'},
     'USD_5': {'currency': 'USD', 'denomination': 5, 'country': 'United States'},
     'USD_10': {'currency': 'USD', 'denomination': 10, 'country': 'United States'},
     'USD_50': {'currency': 'USD', 'denomination': 50, 'country': 'United States'},
     'USD_100': {'currency': 'USD', 'denomination': 100, 'country': 'United States'},
-    
-    # Thai Baht
+
     'THAI_20': {'currency': 'THB', 'denomination': 20, 'country': 'Thailand'},
     'THAI_50': {'currency': 'THB', 'denomination': 50, 'country': 'Thailand'},
     'THAI_100': {'currency': 'THB', 'denomination': 100, 'country': 'Thailand'},
     'THAI_500': {'currency': 'THB', 'denomination': 500, 'country': 'Thailand'},
     'THAI_1000': {'currency': 'THB', 'denomination': 1000, 'country': 'Thailand'},
-    
-    # US Dollar
-    
 }
 
+# =========================
+# PREDICT ROUTE
+# =========================
 @app.route("/predict", methods=["POST"])
 def predict():
+    file_path = "temp.jpg"
+
     try:
-        if 'image' not in request.files:
-            return jsonify({
-                'success': False,
-                'error': 'No image file provided'
-            }), 400
-        
+        if "image" not in request.files:
+            return jsonify({"success": False, "error": "No image uploaded"}), 400
+
         file = request.files["image"]
-        
-        if file.filename == '':
-            return jsonify({
-                'success': False,
-                'error': 'No file selected'
-            }), 400
-        
-        # Save temporary file
-        file_path = "temp.jpg"
+
+        if file.filename == "":
+            return jsonify({"success": False, "error": "Empty file"}), 400
+
         file.save(file_path)
 
-        # Preprocess image
+        # Preprocess (same as training)
         img = image.load_img(file_path, target_size=(224, 224))
         img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0) / 255.0
+        img_array = img_array / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
 
-        # Make prediction
+        # Prediction
         prediction = model.predict(img_array)
-        index = np.argmax(prediction)
-        confidence = float(prediction[0][index]) * 100
+        index = int(np.argmax(prediction))
+        confidence = float(np.max(prediction)) * 100
 
-        # Get predicted class
-        predicted_class = class_names[index]
-        
-        # DEBUG OUTPUT
-        print("=" * 50)
-        print(f"Predicted class: {predicted_class}")
-        print(f"Confidence: {confidence:.2f}%")
-        print("=" * 50)
-        
-        # ✅ CONFIDENCE THRESHOLD - Reject low confidence predictions
-        MIN_CONFIDENCE = 70.0  # You can adjust this (70-85 recommended)
-        
-        if confidence < MIN_CONFIDENCE:
-            # Clean up temp file
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            
+        predicted_class = class_names.get(index, "Unknown")
+
+        print("Class:", predicted_class, "Confidence:", confidence)
+
+        # ✅ Threshold raised to 75%
+        if confidence < 75:
             return jsonify({
-                'success': False,
-                'error': f'Image not recognized as a valid currency note. Please upload a clear image of a currency. (Confidence: {confidence:.1f}%)',
-                'confidence': round(confidence, 2)
+                "success": False,
+                "error": "Low confidence. Please upload a clearer image of the currency note.",
+                "confidence": round(confidence, 2),
+                "retry": True          # <-- frontend can use this flag to prompt re-upload
             }), 400
-        
-        # Get currency details
-        currency_info = CURRENCY_MAPPING.get(predicted_class, {
-            'currency': 'Unknown',
-            'denomination': 0,
-            'country': 'Unknown'
-        })
-        
-        # Clean up temp file
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        
-        # If currency info is Unknown
-        if currency_info['currency'] == 'Unknown':
-            supported_currencies = ', '.join([k for k in CURRENCY_MAPPING.keys()])
+
+        # =========================
+        # MAP TO CURRENCY DETAILS
+        # =========================
+        currency_info = CURRENCY_MAPPING.get(predicted_class)
+
+        if not currency_info:
             return jsonify({
-                'success': False,
-                'error': f'Currency "{predicted_class}" not supported. This model only recognizes: {supported_currencies}'
+                "success": False,
+                "error": f"Unsupported class: {predicted_class}"
             }), 400
-        
-        # Return successful response
+
         return jsonify({
-            'success': True,
-            'prediction': predicted_class,
-            'currency': currency_info['currency'],
-            'denomination': currency_info['denomination'],
-            'country': currency_info['country'],
-            'confidence': round(confidence, 2)
+            "success": True,
+            "prediction": predicted_class,
+            "currency": currency_info["currency"],
+            "denomination": currency_info["denomination"],
+            "country": currency_info["country"],
+            "confidence": round(confidence, 2)
         })
-    
+
     except Exception as e:
-        print(f"ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': f'Recognition failed: {str(e)}'
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+
+# =========================
+# HEALTH CHECK
+# =========================
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
-        'status': 'healthy',
-        'model_loaded': True,
-        'supported_currencies': list(CURRENCY_MAPPING.keys())
+        "status": "healthy",
+        "model_loaded": True,
+        "supported_currencies": list(CURRENCY_MAPPING.keys())
     })
 
+# =========================
+# RUN
+# =========================
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
